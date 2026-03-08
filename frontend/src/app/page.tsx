@@ -6,7 +6,7 @@ export default function Home() {
       {/* NAV */}
       <nav>
         <div className="nav-inner">
-          <div className="nav-logo">STYLR</div>
+          <div className="nav-logo">SNAPSTYLO</div>
           <div className="nav-tabs">
             <button className="nav-tab active">Overview</button>
             <button className="nav-tab">Gallery</button>
@@ -26,7 +26,7 @@ export default function Home() {
           <div className="hero-bg"></div>
           <div className="hero-tag">AI-POWERED GENERATION</div>
           <h1 className="hero-headline">
-            POPULAR<br /><span>STYLE</span><br />PLATFORM
+            SNAP<br /><span>STYLO</span><br />AI STUDIO
           </h1>
           <p className="hero-desc">
             Transform your portraits into cinematic masterpieces.

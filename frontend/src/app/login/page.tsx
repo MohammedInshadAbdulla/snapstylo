@@ -88,7 +88,7 @@ export default function Login() {
                     </button>
 
                     <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--muted)', marginTop: '12px' }}>
-                        New to Stylr? <Link href="/register" style={{ color: 'var(--amber)', textDecoration: 'none' }}>Create an account</Link>
+                        New to SnapStylo? <Link href="/register" style={{ color: 'var(--amber)', textDecoration: 'none' }}>Create an account</Link>
                     </p>
                 </form>
             </div>

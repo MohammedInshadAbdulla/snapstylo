@@ -27,7 +27,7 @@ export default function Nav() {
     return (
         <nav>
             <div className="nav-inner">
-                <div className="nav-logo">STYLR</div>
+                <div className="nav-logo">SNAPSTYLO</div>
                 <div className="nav-tabs">
                     <Link href="/" className={`nav-tab ${pathname === '/' ? 'active' : ''}`}>
                         Overview
