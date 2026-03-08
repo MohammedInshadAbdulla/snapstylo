@@ -15,12 +15,26 @@ origins = [
     "http://127.0.0.1:3000",
     "http://0.0.0.0:3000",
 ]
+
+# Add production domains
 if settings.FRONTEND_URL:
-    origins.append(settings.FRONTEND_URL)
-    # Also add www version if not present
-    if "://www." not in settings.FRONTEND_URL and "://" in settings.FRONTEND_URL:
-        www_version = settings.FRONTEND_URL.replace("://", "://www.")
-        origins.append(www_version)
+    clean_url = settings.FRONTEND_URL.strip().rstrip("/")
+    if clean_url not in origins:
+        origins.append(clean_url)
+    
+    # Add common variations
+    if "https://" in clean_url:
+        # Add www variation
+        if "www." not in clean_url:
+            origins.append(clean_url.replace("https://", "https://www."))
+        else:
+            origins.append(clean_url.replace("https://www.", "https://"))
+
+# Final safety check for common deployment URLs
+origins.extend([
+    "https://snapstylo.com",
+    "https://www.snapstylo.com",
+])
 
 app.add_middleware(
     CORSMiddleware,
