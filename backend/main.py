@@ -10,13 +10,21 @@ from config import settings
 app = FastAPI(title="Popular Style API")
 
 # Configure CORS
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://0.0.0.0:3000",
+]
+if settings.FRONTEND_URL:
+    origins.append(settings.FRONTEND_URL)
+    # Also add www version if not present
+    if "://www." not in settings.FRONTEND_URL and "://" in settings.FRONTEND_URL:
+        www_version = settings.FRONTEND_URL.replace("://", "://www.")
+        origins.append(www_version)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://0.0.0.0:3000"
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
