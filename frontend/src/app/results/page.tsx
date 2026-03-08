@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Nav from '@/components/Nav';
 import { getJobStatus } from '@/lib/api';
 
-export default function Results() {
+function ResultsContent() {
     const searchParams = useSearchParams();
     const jobId = searchParams.get('jobId');
     const [job, setJob] = useState<any>(null);
@@ -63,7 +63,6 @@ export default function Results() {
                             <div className="result-card fade-in">
                                 <div className="result-image">
                                     <div className="result-image-bg"></div>
-                                    {/* In R2, images are served via a custom domain. For now, we use a placeholder or the raw R2 path if configured */}
                                     <div className="result-image-content">
                                         {job.output ? <img src={job.output} alt="Generated" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '🖼️'}
                                     </div>
@@ -103,12 +102,6 @@ export default function Results() {
                                         <p style={{ color: 'var(--muted)', marginTop: '8px' }}>
                                             {job.error || 'An unexpected error occurred while processing your image.'}
                                         </p>
-                                        {job.error?.includes('credit') && (
-                                            <p style={{ color: 'var(--amber)', fontSize: '13px', marginTop: '12px' }}>
-                                                Tip: Your Replicate account appears to be out of credits.
-                                                Please top up at <a href="https://replicate.com/account/billing" target="_blank" style={{ color: 'inherit' }}>replicate.com</a>
-                                            </p>
-                                        )}
                                         <Link href="/dashboard" className="btn btn-secondary" style={{ marginTop: '20px', width: '100%' }}>
                                             Try Again →
                                         </Link>
@@ -126,5 +119,13 @@ export default function Results() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function Results() {
+    return (
+        <Suspense fallback={<div className="page">Loading Results...</div>}>
+            <ResultsContent />
+        </Suspense>
     );
 }
