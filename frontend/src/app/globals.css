@@ -1815,6 +1815,102 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 /* ============================================================
+   STUDIO POWER (Home Page)
+============================================================ */
+.studio-power {
+  padding: 120px 0;
+  background: var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+
+.studio-power::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140%;
+  height: 500px;
+  background: radial-gradient(ellipse at center, rgba(201, 168, 76, 0.05) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--ink-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 40px 32px;
+  position: relative;
+  transition: all 0.4s var(--ease-out);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(201, 168, 76, 0.25);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+}
+
+.feature-card__icon {
+  font-size: 32px;
+  width: 64px;
+  height: 64px;
+  background: var(--ink-3);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+}
+
+.feature-card:hover .feature-card__icon {
+  background: var(--amber-pale);
+  border-color: var(--amber-dk);
+}
+
+.feature-card__title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--paper);
+}
+
+.feature-card__desc {
+  font-size: 14px;
+  color: var(--muted-lt);
+  line-height: 1.7;
+  flex-grow: 1;
+}
+
+.feature-card__link {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: gap 0.2s;
+}
+
+.feature-card:hover .feature-card__link {
+  gap: 12px;
+}
+
+/* ============================================================
    STATS (Pricing page)
 ============================================================ */
 .stat-row {

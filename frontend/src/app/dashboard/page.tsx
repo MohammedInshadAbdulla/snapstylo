@@ -126,6 +126,10 @@ export default function Dashboard() {
                 <section className="section">
                     <div className="section-label">SNAPSTYLO ATELIER</div>
                     <h2 className="section-title">THE MAGIC<br /><em>OF FLUX</em></h2>
+                    <p style={{ color: 'var(--muted)', marginTop: '16px', maxWidth: '600px', fontSize: '14px', lineHeight: '1.6' }}>
+                        {STUDIO_TOOLS.find(t => t.id === activeTool)?.description}.
+                        Powered by secure high-performance studio nodes for instant creative production.
+                    </p>
 
                     {/* Tool Navigation */}
                     <div className="style-pills" style={{ marginBottom: '40px', justifyContent: 'center' }}>

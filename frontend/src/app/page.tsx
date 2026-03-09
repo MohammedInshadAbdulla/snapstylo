@@ -237,6 +237,51 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ═══════ STUDIO POWER (Category A Features) ═══════ */}
+      <section className="studio-power" id="features">
+        <div className="container">
+          <div className="studio-power__header reveal" ref={addRef} style={{ textAlign: 'center', marginBottom: 64 }}>
+            <div className="tag" style={{ marginBottom: 20 }}><span className="dot" />Professional Suite</div>
+            <h2 className="section-title">Beyond Simple<br /><em>Generations</em></h2>
+            <p style={{ color: 'var(--muted)', marginTop: '20px', maxWidth: '600px', margin: '20px auto' }}>
+              SnapStylo gives you the same high-fidelity tools used by professional digital ateliers and photographers.
+            </p>
+          </div>
+
+          <div className="features-grid reveal" ref={addRef}>
+            {[
+              {
+                t: 'Resolution Booster',
+                i: '💎',
+                d: 'Intelligent 4K upscaling using Aura-SR. Not just bigger—smarter detail generation for professional printing.'
+              },
+              {
+                t: 'Image Expansion',
+                i: '🖼️',
+                d: 'Professional AI Outpainting. Effortlessly expand tight crops into sprawling cinematic scenes while preserving your subject.'
+              },
+              {
+                t: 'Studio Backdrop',
+                i: '📸',
+                d: 'Instant background replacement with lighting consistency. Create e-commerce ready lifestyle shots in seconds.'
+              },
+              {
+                t: 'Old Photo Fix',
+                i: '⏳',
+                d: 'Complete restoration and colorization suite. Revive historical portraits or low-res phone photos with AI repair.'
+              }
+            ].map((f, i) => (
+              <div className="feature-card" key={i}>
+                <div className="feature-card__icon">{f.i}</div>
+                <h3 className="feature-card__title">{f.t}</h3>
+                <p className="feature-card__desc">{f.d}</p>
+                <Link href="/login" className="feature-card__link">Enter the Atelier →</Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ═══════ GALLERY PREVIEW ═══════ */}
       <section className="gallery" id="gallery">
         <div className="gallery__header reveal" ref={addRef}>
