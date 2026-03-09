@@ -51,7 +51,7 @@ async def register(user_data: UserCreate, session: Session = Depends(get_session
     session.refresh(new_user)
     
     # Send email
-    success = send_otp_email(user_data.email, otp)
+    success = await send_otp_email(user_data.email, otp)
     
     return {"message": "Verification code sent to email"}
 

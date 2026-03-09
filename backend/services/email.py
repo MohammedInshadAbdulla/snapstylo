@@ -1,13 +1,15 @@
 import httpx
+import os
 from config import settings
 
-def send_otp_email(email: str, otp: str):
-    log_msg = f"Attempting to send OTP to {email}: {otp}\n"
-    with open("email_debug.log", "a") as f:
-        f.write(log_msg)
+async def send_otp_email(email: str, otp: str):
+    log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "email_debug.log")
+    
+    with open(log_path, "a") as f:
+        f.write(f"Attempting to send OTP to {email}: {otp}\n")
         
     if not settings.RESEND_API_KEY:
-        with open("email_debug.log", "a") as f:
+        with open(log_path, "a") as f:
             f.write("DEBUG: Skipping email send (No API Key).\n")
         return True
 
@@ -27,9 +29,6 @@ def send_otp_email(email: str, otp: str):
                     <span style="font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #C9A84C;">{otp}</span>
                 </div>
                 <p style="color: #888;">This code will expire in 10 minutes.</p>
-                <p style="font-size: 11px; color: #555; margin-top: 20px;">
-                    Sent via the elite FLUX 1.1 Pro studio engine.
-                </p>
             </body>
         </html>
         """
@@ -41,11 +40,11 @@ def send_otp_email(email: str, otp: str):
             "html": body
         }
 
-        with httpx.Client() as client:
-            response = client.post(url, headers=headers, json=payload)
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=headers, json=payload)
             response.raise_for_status()
             
-        with open("email_debug.log", "a") as f:
+        with open(log_path, "a") as f:
             f.write(f"Email sent successfully to {email}\n")
         return True
     except Exception as e:
@@ -53,6 +52,6 @@ def send_otp_email(email: str, otp: str):
         if hasattr(e, 'response') and e.response is not None:
              error_info += f"Resend Error Response: {e.response.text}\n"
         
-        with open("email_debug.log", "a") as f:
+        with open(log_path, "a") as f:
             f.write(error_info)
         return False

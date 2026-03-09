@@ -54,6 +54,15 @@ def on_startup():
         # In a real environment, you'd want to handle this more gracefully
         # like using migration tools (Alembic)
 
+@app.get("/debug-config")
+async def debug_config():
+    return {
+        "has_resend_key": bool(settings.RESEND_API_KEY),
+        "from_email": settings.SMTP_FROM,
+        "env": settings.ENV,
+        "db": settings.DATABASE_URL
+    }
+
 @app.get("/users/me")
 async def get_me(current_user: User = Depends(get_current_user)):
     return {
