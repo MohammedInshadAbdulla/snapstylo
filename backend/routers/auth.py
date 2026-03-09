@@ -4,13 +4,13 @@ from sqlmodel import Session, select
 from database import get_session
 from models import User
 from auth import get_password_hash, verify_password, create_access_token
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=8)
 
 class Token(BaseModel):
     access_token: str

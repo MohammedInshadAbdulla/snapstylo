@@ -13,9 +13,9 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Define credit packages matching frontend
 CREDIT_PACKAGES = {
-    "starter": {"credits": 20, "price": 900}, # in cents
-    "pro": {"credits": 100, "price": 2900},
-    "enterprise": {"credits": 500, "price": 9900},
+    "starter": {"credits": 50, "price": 900}, # in cents
+    "pro": {"credits": 300, "price": 2900},
+    "studio": {"credits": 1000, "price": 7900}, # was enterprise
 }
 
 class CheckoutRequest(BaseModel):
@@ -37,7 +37,7 @@ async def create_checkout(
                 "price_data": {
                     "currency": "usd",
                     "product_data": {
-                        "name": f"STYLR - {pkg['credits']} Credits",
+                        "name": f"SnapStylo - {pkg['credits']} Credits",
                         "description": f"Add {pkg['credits']} credits to your account",
                     },
                     "unit_amount": pkg["price"],

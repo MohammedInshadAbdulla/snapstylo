@@ -78,7 +78,7 @@ function ResultsContent() {
                                     <div className="result-btns">
                                         <button className="btn btn-secondary btn-sm" onClick={() => {
                                             if (navigator.share) {
-                                                navigator.share({ title: 'My STYLR Masterpiece', url: job.output });
+                                                navigator.share({ title: 'My SnapStylo Masterpiece', url: job.output });
                                             } else {
                                                 navigator.clipboard.writeText(job.output);
                                                 alert('Link copied!');
