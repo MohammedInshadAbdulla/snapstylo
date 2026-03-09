@@ -4,9 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [activeRef, setActiveRef] = useState<HTMLElement[]>([]);
   const revealRefs = useRef<HTMLElement[]>([]);
-  revealRefs.current = [];
 
   const addRef = (el: HTMLElement | null) => {
     if (el && !revealRefs.current.includes(el)) {
@@ -21,9 +19,15 @@ export default function Home() {
           entry.target.classList.add('active');
         }
       });
-    }, { threshold: 0.1 });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px' // Trigger slightly before it enters fully
+    });
 
-    revealRefs.current.forEach(ref => observer.observe(ref));
+    revealRefs.current.forEach(ref => {
+      if (ref) observer.observe(ref);
+    });
+
     return () => observer.disconnect();
   }, []);
 
