@@ -659,23 +659,23 @@ body::before {
 }
 
 .style-card:nth-child(1) .style-card__bg {
-  background: linear-gradient(160deg, #1a0a0a, #4a2020 60%, #1a0808);
+  background: url('/images/style_crimson_noir.png') center/cover no-repeat;
 }
 
 .style-card:nth-child(2) .style-card__bg {
-  background: linear-gradient(160deg, #0a1020, #162940 60%, #0a0f20);
+  background: url('/images/style_arctic_blueprint.png') center/cover no-repeat;
 }
 
 .style-card:nth-child(3) .style-card__bg {
-  background: linear-gradient(160deg, #0f1408, #2d3618 60%, #121800);
+  background: url('/images/style_emerald_forest.png') center/cover no-repeat;
 }
 
 .style-card:nth-child(4) .style-card__bg {
-  background: linear-gradient(160deg, #1a1008, #3d2c14 60%, #1a1008);
+  background: url('/images/style_gilded_baroque.png') center/cover no-repeat;
 }
 
 .style-card:nth-child(5) .style-card__bg {
-  background: linear-gradient(160deg, #150f20, #30224a 60%, #150f20);
+  background: url('/images/style_midnight_cyber.png') center/cover no-repeat;
 }
 
 .style-card__overlay {
@@ -1032,7 +1032,7 @@ body::before {
 
 .gallery-placeholder {
   width: 100%;
-  min-height: 200px;
+  aspect-ratio: 4/5;
   border-radius: var(--radius-lg);
   background: var(--ink-3);
 }

@@ -252,15 +252,15 @@ export default function Home() {
           </div>
           <div className="gallery-masonry reveal" ref={addRef}>
             {[
-              { bg: 'linear-gradient(135deg, #1c0f08, #3d2010 50%, #2a1608)' },
-              { bg: 'linear-gradient(135deg, #081018, #102030 50%, #081828)' },
-              { bg: 'linear-gradient(135deg, #101408, #202c10 50%, #182008)' },
-              { bg: 'linear-gradient(135deg, #180f20, #2c1a40 50%, #1c1028)' },
-              { bg: 'linear-gradient(135deg, #180c08, #301818 50%, #200c08)' },
-              { bg: 'linear-gradient(135deg, #0c1018, #1a2030 50%, #101820)' }
-            ].map((g, i) => (
+              '/images/gallery_1.png',
+              '/images/gallery_2.png',
+              '/images/gallery_3.png',
+              '/images/gallery_4.png',
+              '/images/gallery_5.png',
+              '/images/gallery_6.png'
+            ].map((img, i) => (
               <div className="gallery-item" key={i}>
-                <div className="gallery-placeholder" style={{ background: g.bg }} />
+                <div className="gallery-placeholder" style={{ background: `url('${img}') center/cover no-repeat` }} />
               </div>
             ))}
           </div>
