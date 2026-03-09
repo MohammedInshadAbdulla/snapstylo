@@ -2,10 +2,25 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Script from 'next/script';
 import Nav from '@/components/Nav';
 
 export default function Home() {
   const revealRefs = useRef<HTMLElement[]>([]);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SnapStylo",
+    "operatingSystem": "Web",
+    "applicationCategory": "MultimediaApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "9.00",
+      "priceCurrency": "USD"
+    },
+    "description": "The elite AI photo studio — where every portrait becomes a cinematic statement. Professional-grade transformations in seconds via FLUX 1.1 Pro."
+  };
 
   const addRef = (el: HTMLElement | null) => {
     if (el && !revealRefs.current.includes(el)) {
@@ -34,6 +49,11 @@ export default function Home() {
 
   return (
     <main>
+      <Script
+        id="structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Nav />
       {/* ═══════ HERO ═══════ */}
       <section className="hero">

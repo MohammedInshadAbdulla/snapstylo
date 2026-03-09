@@ -21,8 +21,37 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SnapStylo — The Elite AI Photo Studio",
-  description: "Transform your photos into cinematic masterpieces with SnapStylo's FLUX-powered AI engine.",
+  title: "SnapStylo — The Elite AI Photo Studio | FLUX 1.1 Powered",
+  description: "Transform your portraits into cinematic masterpieces with SnapStylo. The world's most advanced AI photo studio powered by FLUX 1.1 Pro for surgical precision and high-fidelity artistic styles.",
+  keywords: ["AI photo studio", "AI portrait generator", "FLUX 1.1 Pro", "AI outpainting", "AI inpainting", "cinematic AI photography", "professional AI editor"],
+  authors: [{ name: "SnapStylo Atelier" }],
+  creator: "SnapStylo",
+  metadataBase: new URL("https://snapstylo.com"), // Replace with actual domain when live
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "SnapStylo — The Elite AI Photo Studio",
+    description: "Professional-grade AI transformations in seconds. Powered by FLUX 1.1 Pro.",
+    url: "https://snapstylo.com",
+    siteName: "SnapStylo",
+    images: [
+      {
+        url: "/images/style_crimson_noir.png",
+        width: 1200,
+        height: 630,
+        alt: "SnapStylo AI Studio Showcase",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SnapStylo — The Elite AI Photo Studio",
+    description: "Transform portraits into cinematic statements with FLUX 1.1 Pro.",
+    images: ["/images/style_crimson_noir.png"],
+  },
 };
 
 export default function RootLayout({
