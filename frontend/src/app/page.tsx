@@ -9,6 +9,8 @@ export default function Home() {
   const revealRefs = useRef<HTMLElement[]>([]);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
+  const [particles, setParticles] = useState<{ left: string; top: string; delay: string; duration: string; size: string; opacity: number }[]>([]);
+
   const addRef = (el: HTMLElement | null) => {
     if (el && !revealRefs.current.includes(el)) {
       revealRefs.current.push(el);
@@ -16,6 +18,17 @@ export default function Home() {
   };
 
   useEffect(() => {
+    // Fix Hydration Mismatch: Generate particles on client only
+    const p = [...Array(40)].map(() => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      delay: `${Math.random() * 5}s`,
+      duration: `${10 + Math.random() * 20}s`,
+      size: `${1 + Math.random() * 2}px`,
+      opacity: 0.1 + Math.random() * 0.2
+    }));
+    setParticles(p);
+
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
@@ -58,6 +71,7 @@ export default function Home() {
 
   return (
     <main style={{ position: 'relative', overflow: 'hidden' }}>
+      <div className="noise-overlay" />
       <Script
         id="structured-data"
         type="application/ld+json"
@@ -74,15 +88,18 @@ export default function Home() {
         }}
       />
 
-      {[...Array(20)].map((_, i) => (
+      {particles.map((p, i) => (
         <div
           key={i}
           className="particle"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 5}s`,
-            animationDuration: `${5 + Math.random() * 10}s`
+            left: p.left,
+            top: p.top,
+            animationDelay: p.delay,
+            animationDuration: p.duration,
+            width: p.size,
+            height: p.size,
+            opacity: p.opacity
           }}
         />
       ))}

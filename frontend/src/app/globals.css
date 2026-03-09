@@ -233,8 +233,20 @@ body::before {
 }
 
 /* ============================================================
-   INTERACTIVE ELEMENTS — VIBRANCY 2.0
+   INTERACTIVE ELEMENTS — VIBRANCY 3.0
 ============================================================ */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.03;
+  background: url("https://grainy-gradients.vercel.app/noise.svg");
+  filter: contrast(120%) brightness(100%);
+}
+
 .cursor-glow {
   position: fixed;
   width: 400px;
@@ -776,12 +788,27 @@ body::before {
   overflow: hidden;
   aspect-ratio: 3/4;
   cursor: pointer;
-  transition: transform 0.4s var(--ease-out), box-shadow 0.4s;
+  transition: transform 0.6s var(--ease-out), box-shadow 0.6s;
+  perspective: 1000px;
+  background: var(--ink-2);
 }
 
 .style-card:hover {
-  transform: translateY(-6px) scale(1.01);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(201, 168, 76, 0.2);
+  transform: translateY(-12px) rotateX(4deg) rotateY(-2deg);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(201, 168, 76, 0.35);
+}
+
+.style-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, transparent 40%, rgba(201, 168, 76, 0.08) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.8s var(--ease-out);
+}
+
+.style-card:hover::after {
+  transform: translateX(100%);
 }
 
 .style-card__bg {
@@ -918,11 +945,18 @@ body::before {
   border: 1px solid rgba(255, 255, 255, 0.04);
   position: relative;
   overflow: hidden;
-  transition: background 0.3s;
+  transition: background 0.4s, transform 0.4s var(--ease-out), border-color 0.4s;
 }
 
 .step:hover {
   background: var(--ink-2);
+  transform: translateY(-4px);
+  border-color: rgba(201, 168, 76, 0.2);
+}
+
+.step:hover .step__num {
+  color: rgba(201, 168, 76, 0.45);
+  transform: scale(1.1) translateX(-5px);
 }
 
 .step__num {
@@ -934,6 +968,7 @@ body::before {
   position: absolute;
   top: 16px;
   right: 20px;
+  transition: all 0.4s var(--ease-out);
 }
 
 .step__title {
