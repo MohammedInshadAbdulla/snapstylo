@@ -95,37 +95,39 @@ export default function Home() {
 
       {/* ═══════ STYLES ═══════ */}
       <section className="styles-strip" id="styles">
-        <div className="styles-strip__header reveal" ref={addRef}>
-          <div>
-            <div className="tag" style={{ marginBottom: 16 }}><span className="dot" /> 48 Unique Styles</div>
-            <h2 className="section-title">Curated<br /><em>Aesthetic</em> Styles</h2>
-          </div>
-          <p className="section-sub" style={{ textAlign: 'right' }}>From noir cinema to baroque oil painting — every style is precision-tuned by visual artists.</p>
-        </div>
-        <div className="styles-grid reveal" ref={addRef}>
-          {[
-            { name: 'Crimson\nNoir', label: 'Style 01', desc: 'High-contrast shadows with deep red undertones.' },
-            { name: 'Arctic\nBlueprint', label: 'Style 02', desc: 'Cold steel tones and precise geometric framing.' },
-            { name: 'Emerald\nForest', label: 'Style 03', desc: 'Rich botanical greens with organic strokes.' },
-            { name: 'Gilded\nBaroque', label: 'Style 04', desc: 'Classical lighting with ornate gold detailing.' },
-            { name: 'Midnight\nCyber', label: 'Style 05', desc: 'Neon highlights against obsidian deep space.' }
-          ].map((s, i) => (
-            <div className="style-card" key={i}>
-              <div className="style-card__bg" />
-              <div className="style-card__overlay" />
-              <div className="style-card__corner">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
-              </div>
-              <div className="style-card__body">
-                <div className="style-card__label">{s.label}</div>
-                <h3 className="style-card__name">{s.name}</h3>
-                <p className="style-card__desc">{s.desc}</p>
-                <Link href="/register" className="style-card__link">
-                  Select <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
-                </Link>
-              </div>
+        <div className="container">
+          <div className="styles-strip__header reveal" ref={addRef}>
+            <div>
+              <div className="tag" style={{ marginBottom: 16 }}><span className="dot" /> 48 Unique Styles</div>
+              <h2 className="section-title">Curated<br /><em>Aesthetic</em> Styles</h2>
             </div>
-          ))}
+            <p className="section-sub">From noir cinema to baroque oil painting — every style is precision-tuned by visual artists.</p>
+          </div>
+          <div className="styles-grid reveal" ref={addRef}>
+            {[
+              { name: 'Crimson\nNoir', label: 'Style 01', desc: 'High-contrast shadows with deep red undertones.' },
+              { name: 'Arctic\nBlueprint', label: 'Style 02', desc: 'Cold steel tones and precise geometric framing.' },
+              { name: 'Emerald\nForest', label: 'Style 03', desc: 'Rich botanical greens with organic strokes.' },
+              { name: 'Gilded\nBaroque', label: 'Style 04', desc: 'Classical lighting with ornate gold detailing.' },
+              { name: 'Midnight\nCyber', label: 'Style 05', desc: 'Neon highlights against obsidian deep space.' }
+            ].map((s, i) => (
+              <div className="style-card" key={i}>
+                <div className="style-card__bg" />
+                <div className="style-card__overlay" />
+                <div className="style-card__corner">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+                </div>
+                <div className="style-card__body">
+                  <div className="style-card__label">{s.label}</div>
+                  <h3 className="style-card__name">{s.name}</h3>
+                  <p className="style-card__desc">{s.desc}</p>
+                  <Link href="/register" className="style-card__link">
+                    Select <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -243,23 +245,25 @@ export default function Home() {
 
       {/* ═══════ GALLERY ═══════ */}
       <section className="gallery" id="gallery">
-        <div className="gallery__header reveal" ref={addRef}>
-          <div className="tag" style={{ marginBottom: 20 }}><span className="dot" />Community Gallery</div>
-          <h2 className="section-title">Created with<br /><em>SnapStylo</em></h2>
-        </div>
-        <div className="gallery-masonry reveal" ref={addRef}>
-          {[
-            { bg: 'linear-gradient(135deg, #1c0f08, #3d2010 50%, #2a1608)' },
-            { bg: 'linear-gradient(135deg, #081018, #102030 50%, #081828)' },
-            { bg: 'linear-gradient(135deg, #101408, #202c10 50%, #182008)' },
-            { bg: 'linear-gradient(135deg, #180f20, #2c1a40 50%, #1c1028)' },
-            { bg: 'linear-gradient(135deg, #180c08, #301818 50%, #200c08)' },
-            { bg: 'linear-gradient(135deg, #0c1018, #1a2030 50%, #101820)' }
-          ].map((g, i) => (
-            <div className="gallery-item" key={i}>
-              <div className="gallery-placeholder" style={{ background: g.bg }} />
-            </div>
-          ))}
+        <div className="container">
+          <div className="gallery__header reveal" ref={addRef}>
+            <div className="tag" style={{ marginBottom: 20 }}><span className="dot" />Community Gallery</div>
+            <h2 className="section-title">Created with<br /><em>SnapStylo</em></h2>
+          </div>
+          <div className="gallery-masonry reveal" ref={addRef}>
+            {[
+              { bg: 'linear-gradient(135deg, #1c0f08, #3d2010 50%, #2a1608)' },
+              { bg: 'linear-gradient(135deg, #081018, #102030 50%, #081828)' },
+              { bg: 'linear-gradient(135deg, #101408, #202c10 50%, #182008)' },
+              { bg: 'linear-gradient(135deg, #180f20, #2c1a40 50%, #1c1028)' },
+              { bg: 'linear-gradient(135deg, #180c08, #301818 50%, #200c08)' },
+              { bg: 'linear-gradient(135deg, #0c1018, #1a2030 50%, #101820)' }
+            ].map((g, i) => (
+              <div className="gallery-item" key={i}>
+                <div className="gallery-placeholder" style={{ background: g.bg }} />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
