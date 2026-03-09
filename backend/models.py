@@ -22,6 +22,12 @@ class Job(SQLModel, table=True):
     user_id: int = Field(foreign_key="user.id")
     status: str = Field(default=JobStatus.PENDING)
     style_id: str
+    prompt: Optional[str] = None
+    aspect_ratio: str = Field(default="portrait_4_5")
+    guidance_scale: float = Field(default=3.5)
+    num_inference_steps: int = Field(default=28)
+    prompt_strength: float = Field(default=0.5)
+    seed: Optional[int] = None
     input_r2_key: str
     output_r2_key: Optional[str] = None
     idempotency_key: str = Field(unique=True, index=True)

@@ -1,6 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-export async function submitJob(styleId: string, inputKey: string, idempotencyKey: string, token: string) {
+export async function submitJob(styleId: string, inputKey: string, idempotencyKey: string, token: string, config: any = {}) {
     const response = await fetch(`${API_URL}/jobs/submit`, {
         method: 'POST',
         headers: {
@@ -10,7 +10,8 @@ export async function submitJob(styleId: string, inputKey: string, idempotencyKe
         body: JSON.stringify({
             style_id: styleId,
             input_r2_key: inputKey,
-            idempotency_key: idempotencyKey
+            idempotency_key: idempotencyKey,
+            ...config
         })
     });
 

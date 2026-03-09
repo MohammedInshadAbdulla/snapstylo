@@ -19,6 +19,12 @@ class SubmitJobRequest(BaseModel):
     style_id: str
     input_r2_key: str
     idempotency_key: str
+    prompt: Optional[str] = None
+    aspect_ratio: str = "portrait_4_5"
+    guidance_scale: float = 3.5
+    num_inference_steps: int = 28
+    prompt_strength: float = 0.5
+    seed: Optional[int] = None
 
 @router.get("/upload-url", response_model=UploadURLResponse)
 async def get_upload_url(current_user: User = Depends(get_current_user)):
@@ -51,6 +57,12 @@ async def submit_job(
         user_id=current_user.id,
         status=JobStatus.PENDING,
         style_id=request.style_id,
+        prompt=request.prompt,
+        aspect_ratio=request.aspect_ratio,
+        guidance_scale=request.guidance_scale,
+        num_inference_steps=request.num_inference_steps,
+        prompt_strength=request.prompt_strength,
+        seed=request.seed,
         input_r2_key=request.input_r2_key,
         idempotency_key=request.idempotency_key
     )

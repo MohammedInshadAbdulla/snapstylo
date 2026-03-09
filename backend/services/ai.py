@@ -16,27 +16,32 @@ class AIService:
     def __init__(self):
         pass
 
-    async def generate_image(self, prompt: str, input_image_url: str = None):
+    async def generate_image(self, prompt: str, input_image_url: str = None, **kwargs):
         """
-        Production-level FLUX 1.1 [pro] generation.
-        The current industry leader in speed and realism.
+        Professional FLUX Dev generation with granular control.
+        Supports advanced parameters for studio-grade artistic output.
         """
         configure_fal()
         
+        # Default parameters aligned with FLUX Dev best practices
         arguments = {
             "prompt": prompt,
-            "num_inference_steps": 28,
-            "guidance_scale": 3.5,
-            "image_size": "portrait_4_5"
+            "num_inference_steps": kwargs.get("num_inference_steps", 28),
+            "guidance_scale": kwargs.get("guidance_scale", 3.5),
+            "image_size": kwargs.get("aspect_ratio", "portrait_4_5"),
+            "enable_safety_checker": True
         }
+
+        if kwargs.get("seed"):
+            arguments["seed"] = kwargs.get("seed")
 
         if input_image_url:
             arguments["image_url"] = input_image_url
-            arguments["strength"] = 0.5
-            # Using the image-to-image specialized endpoint for pro
-            endpoint = "fal-ai/flux-pro/v1.1/image-to-image"
+            arguments["strength"] = kwargs.get("prompt_strength", 0.5)
+            # Image-to-image specialized endpoint
+            endpoint = "fal-ai/flux/dev/image-to-image"
         else:
-            endpoint = "fal-ai/flux-pro/v1.1"
+            endpoint = "fal-ai/flux/dev"
 
         result = await fal_client.subscribe_async(
             endpoint,

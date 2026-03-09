@@ -35,12 +35,22 @@ async def process_generation(ctx, job_id: str):
             session.add(job)
             session.commit()
 
-            # 4. Prompt Assembly (Get style info)
+            # 4. Prompt Assembly & Parameter Extraction
             input_url = storage_service.get_download_url(job.input_r2_key, expiration=300)
-            prompt = f"A professional realistic portrait of the person in {input_url} in a stunning {job.style_id} cinematic style"
             
-            # 5. Model Inference
-            image_url = await ai_service.generate_image(prompt, input_url)
+            # Use custom prompt if provided, otherwise fallback to style template
+            final_prompt = job.prompt or f"A professional realistic portrait of the person in {input_url} in a stunning {job.style_id} cinematic style"
+            
+            ai_params = {
+                "aspect_ratio": job.aspect_ratio,
+                "guidance_scale": job.guidance_scale,
+                "num_inference_steps": job.num_inference_steps,
+                "prompt_strength": job.prompt_strength,
+                "seed": job.seed
+            }
+
+            # 5. Model Inference (Forwarding all studio params)
+            image_url = await ai_service.generate_image(final_prompt, input_url, **ai_params)
             
             # 6. Face Restoration
             restored_url = await ai_service.restore_face(image_url)
