@@ -18,35 +18,30 @@ class AIService:
 
     async def generate_image(self, prompt: str, input_image_url: str = None):
         """
-        Production-level FLUX.1 [dev] generation via fal.ai.
-        Uses image-to-image to maintain user likeness.
+        Production-level FLUX 1.1 [pro] generation.
+        The current industry leader in speed and realism.
         """
         configure_fal()
         
+        arguments = {
+            "prompt": prompt,
+            "num_inference_steps": 28,
+            "guidance_scale": 3.5,
+            "image_size": "portrait_4_5"
+        }
+
         if input_image_url:
-            # Premium Image-to-Image logic
-            result = await fal_client.subscribe_async(
-                "fal-ai/flux/dev/image-to-image",
-                arguments={
-                    "prompt": prompt,
-                    "image_url": input_image_url,
-                    "strength": 0.5, # Balance between style and likeness
-                    "num_inference_steps": 28,
-                    "guidance_scale": 3.5,
-                    "image_size": "portrait_4_5"
-                }
-            )
+            arguments["image_url"] = input_image_url
+            arguments["strength"] = 0.5
+            # Using the image-to-image specialized endpoint for pro
+            endpoint = "fal-ai/flux-pro/v1.1/image-to-image"
         else:
-            # Fallback to Text-to-Image if no input provided
-            result = await fal_client.subscribe_async(
-                "fal-ai/flux/dev",
-                arguments={
-                    "prompt": prompt,
-                    "num_inference_steps": 28,
-                    "guidance_scale": 3.5,
-                    "image_size": "portrait_4_5"
-                }
-            )
+            endpoint = "fal-ai/flux-pro/v1.1"
+
+        result = await fal_client.subscribe_async(
+            endpoint,
+            arguments=arguments
+        )
         
         return result["images"][0]["url"]
 

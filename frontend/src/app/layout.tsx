@@ -21,8 +21,8 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Popular Style — AI Photo Transformation",
-  description: "Modern AI-powered photo styling platform.",
+  title: "SnapStylo — The Elite AI Photo Studio",
+  description: "Transform your photos into cinematic masterpieces with SnapStylo's FLUX-powered AI engine.",
 };
 
 export default function RootLayout({

@@ -74,6 +74,45 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* FOOTER */}
+        <footer style={{ padding: '80px 20px', borderTop: '1px solid var(--border)', marginTop: '80px' }}>
+          <div className="nav-inner" style={{ flexDirection: 'column', gap: '40px', alignItems: 'flex-start' }}>
+            <div className="nav-logo" style={{ fontSize: '32px' }}>SNAPSTYLO</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', width: '100%', gap: '40px' }}>
+              <div>
+                <div style={{ color: 'var(--amber)', fontSize: '13px', fontWeight: 600, marginBottom: '20px' }}>PRODUCT</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '14px', color: 'var(--muted)' }}>
+                  <Link href="/dashboard" style={{ color: 'inherit', textDecoration: 'none' }}>Studio</Link>
+                  <Link href="/gallery" style={{ color: 'inherit', textDecoration: 'none' }}>Gallery</Link>
+                  <Link href="/pricing" style={{ color: 'inherit', textDecoration: 'none' }}>Pricing</Link>
+                </div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--amber)', fontSize: '13px', fontWeight: 600, marginBottom: '20px' }}>COMPANY</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '14px', color: 'var(--muted)' }}>
+                  <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>About</a>
+                  <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Contact</a>
+                  <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Terms</a>
+                </div>
+              </div>
+              <div style={{ gridColumn: 'span 2' }}>
+                <div style={{ color: 'var(--amber)', fontSize: '13px', fontWeight: 600, marginBottom: '20px' }}>NEWSLETTER</div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <input className="form-input" placeholder="Enter your email" style={{ maxWidth: '250px' }} />
+                  <button className="btn btn-primary btn-sm">Join</button>
+                </div>
+              </div>
+            </div>
+            <div style={{ width: '100%', paddingTop: '40px', borderTop: '1px solid var(--border)', fontSize: '12px', color: 'var(--muted)', display: 'flex', justifyContent: 'space-between' }}>
+              <span>© 2026 SNAPSTYLO AI. ALL RIGHTS RESERVED.</span>
+              <div style={{ display: 'flex', gap: '20px' }}>
+                <span>INSTAGRAM</span>
+                <span>TWITTER</span>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </main>
   );
