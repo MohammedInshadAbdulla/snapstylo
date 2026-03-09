@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Nav from '@/components/Nav';
 import StyleCard from '@/components/StyleCard';
@@ -8,6 +8,8 @@ import { getUploadUrl, submitJob } from '@/lib/api';
 
 const STUDIO_TOOLS = [
     { id: 'generate', name: 'AI Transform', description: 'Portrait & Style transfer', icon: '🎨' },
+    { id: 'inpaint', name: 'Magic Brush', description: 'Draw over areas to change them', icon: '🖌️' },
+    { id: 'relight', name: 'Cinematic Light', description: 'Change environment lighting', icon: '💡' },
     { id: 'upscale', name: 'Resolution Booster', description: 'Enhance to 4K quality', icon: '💎' },
     { id: 'outpaint', name: 'Image Expansion', description: 'Expand scenes beyond edge', icon: '🖼️' },
     { id: 'background', name: 'Studio Backdrop', description: 'E-commerce background', icon: '📸' },
@@ -22,12 +24,6 @@ const STYLES = [
     { id: 'anime', name: 'Shōnen', description: 'Manga portrait', icon: '🌸', gradientClass: 'style-anime', badge: 'PRO', badgeClass: 'badge-pro' },
 ];
 
-const ASPECT_RATIOS = [
-    { id: 'portrait_4_5', label: 'Portrait (4:5)', icon: '📱' },
-    { id: 'square_1_1', label: 'Square (1:1)', icon: '🟦' },
-    { id: 'landscape_16_9', label: 'Landscape (16:9)', icon: '🖼️' },
-];
-
 export default function Dashboard() {
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,6 +35,12 @@ export default function Dashboard() {
     const [selectedStyle, setSelectedStyle] = useState('synthwave');
     const [file, setFile] = useState<File | null>(null);
     const [isDragging, setIsDragging] = useState(false);
+
+    // Drawing State (for Magic Brush)
+    const [isDrawing, setIsDrawing] = useState(false);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     // AI Parameters
     const [prompt, setPrompt] = useState('');
@@ -60,9 +62,63 @@ export default function Dashboard() {
         setIsAuthenticated(true);
     }, [router]);
 
+    // Canvas Logic for Magic Brush
+    useEffect(() => {
+        if (activeTool === 'inpaint' && file && canvasRef.current && containerRef.current) {
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            img.onload = () => {
+                const containerWidth = containerRef.current!.offsetWidth;
+                const scale = containerWidth / img.width;
+                canvas.width = containerWidth;
+                canvas.height = img.height * scale;
+                ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+                setImageLoaded(true);
+            };
+        }
+    }, [activeTool, file]);
+
+    const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+        setIsDrawing(true);
+        draw(e);
+    };
+
+    const stopDrawing = () => {
+        setIsDrawing(false);
+        const canvas = canvasRef.current;
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx?.beginPath();
+        }
+    };
+
+    const draw = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isDrawing || !canvasRef.current) return;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const x = ('touches' in e) ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
+        const y = ('touches' in e) ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+
+        ctx.lineWidth = 30;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(201, 168, 76, 0.5)';
+        ctx.globalCompositeOperation = 'source-over';
+
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    };
+
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
+            setImageLoaded(false);
         }
     };
 
@@ -70,7 +126,7 @@ export default function Dashboard() {
         if (!file) return alert("Please upload a photo first");
 
         setIsGenerating(true);
-        setStatus('Initializing Engine...');
+        setStatus('Initializing Studio Engine...');
 
         try {
             const token = localStorage.getItem('token');
@@ -79,10 +135,8 @@ export default function Dashboard() {
                 return;
             }
 
-            // 1. Get Presigned URL
+            // 1. Get Presigned URL for Image
             const { upload_url, key } = await getUploadUrl(token);
-
-            // 2. Upload directly to R2
             setStatus('Secure Portrait Processing...');
             await fetch(upload_url, {
                 method: 'PUT',
@@ -90,13 +144,41 @@ export default function Dashboard() {
                 headers: { 'Content-Type': file.type }
             });
 
-            // 3. Submit Job with full studio config
+            // 2. Handle Inpaint Mask if needed
+            let maskKey = null;
+            if (activeTool === 'inpaint' && canvasRef.current) {
+                setStatus('Generating Magic Mask...');
+                const maskCanvas = document.createElement('canvas');
+                maskCanvas.width = canvasRef.current.width;
+                maskCanvas.height = canvasRef.current.height;
+                const mCtx = maskCanvas.getContext('2d');
+
+                // We need a black and white mask
+                mCtx!.fillStyle = 'black';
+                mCtx!.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+
+                // Copy drawing from main canvas
+                mCtx!.globalCompositeOperation = 'source-over';
+                mCtx!.drawImage(canvasRef.current, 0, 0);
+
+                const maskBlob = await new Promise<Blob>((resolve) => maskCanvas.toBlob(b => resolve(b!), 'image/png'));
+                const { upload_url: m_url, key: m_key } = await getUploadUrl(token);
+                await fetch(m_url, {
+                    method: 'PUT',
+                    body: maskBlob,
+                    headers: { 'Content-Type': 'image/png' }
+                });
+                maskKey = m_key;
+            }
+
+            // 3. Submit Job
             setStatus(`Studio Task: ${activeTool.toUpperCase()}...`);
-            const idempotencyKey = btoa(file.name + file.size + selectedStyle + activeTool + Date.now());
+            const idempotencyKey = btoa(file.name + file.size + activeTool + Date.now());
 
             const config = {
                 task_type: activeTool,
                 prompt: prompt || undefined,
+                mask_r2_key: maskKey,
                 aspect_ratio: aspectRatio,
                 guidance_scale: guidanceScale,
                 num_inference_steps: inferenceSteps,
@@ -105,8 +187,6 @@ export default function Dashboard() {
             };
 
             const { job_id } = await submitJob(selectedStyle, key, idempotencyKey, token, config);
-
-            // 4. Poll and Redirect
             router.push(`/results?jobId=${job_id}`);
 
         } catch (err: any) {
@@ -138,7 +218,6 @@ export default function Dashboard() {
                                 key={tool.id}
                                 className={`style-pill ${activeTool === tool.id ? 'active' : ''}`}
                                 onClick={() => setActiveTool(tool.id)}
-                                style={{ padding: '12px 20px' }}
                             >
                                 <span style={{ marginRight: '8px' }}>{tool.icon}</span>
                                 {tool.name}
@@ -150,41 +229,48 @@ export default function Dashboard() {
                         <div className="two-col">
                             {/* Left Column: Visual Assets */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                <div className="demo-block" data-label="UPLOAD SOURCE">
-                                    <label
-                                        className={`upload-zone ${isDragging ? 'dragover' : ''}`}
-                                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                                        onDragLeave={() => setIsDragging(false)}
-                                        onDrop={(e) => {
-                                            e.preventDefault();
-                                            setIsDragging(false);
-                                            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                                                setFile(e.dataTransfer.files[0]);
-                                            }
-                                        }}
-                                    >
-                                        <input type="file" hidden onChange={handleFileUpload} accept="image/*" />
-                                        <div className="upload-icon">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+                                <div className="demo-block" data-label={activeTool === 'inpaint' ? 'MAGIC CANVAS' : 'UPLOAD SOURCE'} ref={containerRef}>
+                                    {activeTool === 'inpaint' && file ? (
+                                        <div style={{ position: 'relative', cursor: 'crosshair', borderRadius: '8px', overflow: 'hidden' }}>
+                                            <canvas
+                                                ref={canvasRef}
+                                                onMouseDown={startDrawing}
+                                                onMouseUp={stopDrawing}
+                                                onMouseMove={draw}
+                                                onMouseLeave={stopDrawing}
+                                                onTouchStart={startDrawing}
+                                                onTouchEnd={stopDrawing}
+                                                onTouchMove={draw}
+                                                style={{ width: '100%', display: 'block' }}
+                                            />
+                                            <div style={{
+                                                position: 'absolute', top: '10px', left: '10px',
+                                                background: 'rgba(0,0,0,0.6)', padding: '6px 12px',
+                                                borderRadius: '100px', fontSize: '11px', color: 'white'
+                                            }}>
+                                                Paint over the area you want to change
+                                            </div>
                                         </div>
-                                        <div className="upload-title">{file ? file.name : 'Upload Your Baseline'}</div>
-                                        <div className="upload-sub">Format: WEBP, JPEG, PNG supported</div>
-                                    </label>
+                                    ) : (
+                                        <label className={`upload-zone ${isDragging ? 'dragover' : ''}`}>
+                                            <input type="file" hidden onChange={handleFileUpload} accept="image/*" />
+                                            <div className="upload-icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+                                            </div>
+                                            <div className="upload-title">{file ? file.name : 'Upload Your Baseline'}</div>
+                                            <div className="upload-sub">WebP, JPEG, PNG supported</div>
+                                        </label>
+                                    )}
                                 </div>
 
                                 {activeTool !== 'upscale' && activeTool !== 'restore' && (
-                                    <div className="demo-block" data-label="CREATIVE CONTEXT">
-                                        <div className="form-label" style={{ marginBottom: '12px' }}>
-                                            {activeTool === 'outpaint' ? 'Expansion Theme' :
-                                                activeTool === 'background' ? 'Environment Description' :
-                                                    'Custom Directives'}
-                                        </div>
+                                    <div className="demo-block" data-label="DIRECTIVES">
                                         <textarea
                                             className="form-input"
                                             placeholder={
-                                                activeTool === 'outpaint' ? "e.g. 'vast futuristic city', 'lush mountain landscape'..." :
-                                                    activeTool === 'background' ? "e.g. 'modern minimal studio with soft shadows', 'busy Paris street'..." :
-                                                        "Add specific details like 'golden hour', 'vibrant colors', etc."
+                                                activeTool === 'inpaint' ? "What should appear in the painted area?" :
+                                                    activeTool === 'relight' ? "Describe the lighting: 'neon city', 'warm sunset', etc." :
+                                                        "Describe your creative vision..."
                                             }
                                             rows={4}
                                             value={prompt}
@@ -196,57 +282,8 @@ export default function Dashboard() {
                             </div>
 
                             {/* Right Column: Engine Parameters */}
-                            <div className="demo-block" data-label="ENGINE OPTIMIZATION">
+                            <div className="demo-block" data-label="OPTIMIZATION">
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-
-                                    {activeTool === 'generate' && (
-                                        <div className="param-group">
-                                            <div className="form-label" style={{ marginBottom: '12px' }}>Studio Canvas</div>
-                                            <div style={{ display: 'flex', gap: '8px' }}>
-                                                {ASPECT_RATIOS.map(ratio => (
-                                                    <button
-                                                        key={ratio.id}
-                                                        className={`style-pill ${aspectRatio === ratio.id ? 'active' : ''}`}
-                                                        onClick={() => setAspectRatio(ratio.id)}
-                                                        style={{ flex: 1, padding: '10px 4px' }}
-                                                    >
-                                                        <span style={{ marginRight: '6px' }}>{ratio.icon}</span>
-                                                        {ratio.label.split(' ')[0]}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {activeTool === 'generate' && (
-                                        <>
-                                            <div className="range-group">
-                                                <div className="range-header">
-                                                    <div className="form-label">Stylization Intensity</div>
-                                                    <div className="range-val">{Math.round(promptStrength * 100)}%</div>
-                                                </div>
-                                                <input
-                                                    type="range"
-                                                    min="0" max="1" step="0.01"
-                                                    value={promptStrength}
-                                                    onChange={(e) => setPromptStrength(parseFloat(e.target.value))}
-                                                />
-                                            </div>
-
-                                            <div className="range-group">
-                                                <div className="range-header">
-                                                    <div className="form-label">Guidance Scale</div>
-                                                    <div className="range-val">{guidanceScale}</div>
-                                                </div>
-                                                <input
-                                                    type="range"
-                                                    min="1" max="10" step="0.1"
-                                                    value={guidanceScale}
-                                                    onChange={(e) => setGuidanceScale(parseFloat(e.target.value))}
-                                                />
-                                            </div>
-                                        </>
-                                    )}
 
                                     <button
                                         className={`btn btn-primary btn-lg ${isGenerating ? 'disabled' : ''}`}
@@ -254,35 +291,27 @@ export default function Dashboard() {
                                         onClick={handleGenerate}
                                         disabled={isGenerating}
                                     >
-                                        {isGenerating ? (
-                                            <span style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
-                                                <div className="gen-status-dot" /> {status}
-                                            </span>
-                                        ) : `Start ${STUDIO_TOOLS.find(t => t.id === activeTool)?.name} →`}
+                                        {isGenerating ? status : `Start ${STUDIO_TOOLS.find(t => t.id === activeTool)?.name} →`}
                                     </button>
 
-                                    <div style={{ textAlign: 'center', opacity: 0.5, fontSize: '11px', fontStyle: 'italic' }}>
-                                        High-priority processing via secure studio nodes
-                                    </div>
+                                    {activeTool === 'generate' && (
+                                        <div className="collections-mini">
+                                            <div className="form-label" style={{ marginBottom: '12px' }}>Style Preset</div>
+                                            <div className="style-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                                                {STYLES.map((style) => (
+                                                    <StyleCard
+                                                        key={style.id}
+                                                        {...style}
+                                                        selected={selectedStyle === style.id}
+                                                        onSelect={(id) => setSelectedStyle(id)}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
-
-                        {/* Bottom Section: Style Selection */}
-                        {activeTool === 'generate' && (
-                            <div className="demo-block" data-label="ARTISTIC COLLECTIONS">
-                                <div className="style-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
-                                    {STYLES.map((style) => (
-                                        <StyleCard
-                                            key={style.id}
-                                            {...style}
-                                            selected={selectedStyle === style.id}
-                                            onSelect={(id) => setSelectedStyle(id)}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </section>
             </div>

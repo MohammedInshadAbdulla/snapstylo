@@ -98,6 +98,43 @@ class AIService:
         )
         return result["image"]["url"]
 
+    async def inpaint(self, image_url: str, mask_url: str, prompt: str, **kwargs):
+        """
+        Magic Brush (Inpainting) — Surgical edits on specific areas.
+        """
+        configure_fal()
+        result = await fal_client.subscribe_async(
+            "fal-ai/flux-dev/inpainting",
+            arguments={
+                "image_url": image_url,
+                "mask_url": mask_url,
+                "prompt": prompt,
+                "num_inference_steps": kwargs.get("num_inference_steps", 30),
+                "guidance_scale": kwargs.get("guidance_scale", 3.5),
+                "enable_safety_checker": True
+            }
+        )
+        return result["images"][0]["url"]
+
+    async def relight(self, image_url: str, prompt: str, **kwargs):
+        """
+        Cinematic Relighting — Changing environment light while preserving subject.
+        """
+        configure_fal()
+        # For relighting, we use image-to-image with a specific "Relighting" flavor
+        result = await fal_client.subscribe_async(
+            "fal-ai/flux/dev/image-to-image",
+            arguments={
+                "image_url": image_url,
+                "prompt": f"Professional cinematic lighting, {prompt}, maintaining subject consistency, photorealism",
+                "strength": 0.45, # Sweet spot for lighting change without subject morphing
+                "guidance_scale": 7.5, # High guidance for lighting adherence
+                "num_inference_steps": 30,
+                "enable_safety_checker": True
+            }
+        )
+        return result["images"][0]["url"]
+
     async def restore_face(self, image_url: str):
         """
         High-fidelity face restoration for pro results.

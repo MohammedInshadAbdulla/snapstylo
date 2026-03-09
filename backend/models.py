@@ -30,6 +30,7 @@ class Job(SQLModel, table=True):
     prompt_strength: float = Field(default=0.5)
     seed: Optional[int] = None
     input_r2_key: str
+    mask_r2_key: Optional[str] = None
     output_r2_key: Optional[str] = None
     idempotency_key: str = Field(unique=True, index=True)
     error_message: Optional[str] = None

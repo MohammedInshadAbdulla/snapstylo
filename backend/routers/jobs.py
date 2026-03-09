@@ -19,6 +19,7 @@ class UploadURLResponse(BaseModel):
 class SubmitJobRequest(BaseModel):
     style_id: str
     input_r2_key: str
+    mask_r2_key: Optional[str] = None
     idempotency_key: str
     task_type: str = "generate"
     prompt: Optional[str] = None
@@ -67,6 +68,7 @@ async def submit_job(
         prompt_strength=request.prompt_strength,
         seed=request.seed,
         input_r2_key=request.input_r2_key,
+        mask_r2_key=request.mask_r2_key,
         idempotency_key=request.idempotency_key
     )
     session.add(job)

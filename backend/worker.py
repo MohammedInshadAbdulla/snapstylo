@@ -58,13 +58,18 @@ async def process_generation(ctx, job_id: str):
                 image_url = await ai_service.generate_background(input_url, final_prompt)
             elif job.task_type == "restore":
                 image_url = await ai_service.restore_old_photo(input_url)
+            elif job.task_type == "inpaint":
+                mask_url = storage_service.get_download_url(job.mask_r2_key, expiration=300) if job.mask_r2_key else None
+                image_url = await ai_service.inpaint(input_url, mask_url, final_prompt, **ai_params)
+            elif job.task_type == "relight":
+                image_url = await ai_service.relight(input_url, final_prompt, **ai_params)
             else:
                 # Standard Generation (FLUX Dev)
                 image_url = await ai_service.generate_image(final_prompt, input_url, **ai_params)
             
-            # 6. Face Restoration (Optional for non-portrait tasks in future, but keeping for now)
-            # Skip restoration for outpaint/background to preserve scene integrity if needed
-            if job.task_type in ["generate", "upscale"]:
+            # 6. Face Restoration (Optional)
+            # Skip for surgical edits (inpaint) to avoid blurring unedited areas
+            if job.task_type in ["generate", "upscale", "relight"]:
                 restored_url = await ai_service.restore_face(image_url)
             else:
                 restored_url = image_url

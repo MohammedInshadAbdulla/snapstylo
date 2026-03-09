@@ -256,9 +256,19 @@ export default function Home() {
                 d: 'Intelligent 4K upscaling using Aura-SR. Not just bigger—smarter detail generation for professional printing.'
               },
               {
+                t: 'Magic Brush',
+                i: '🖌️',
+                d: 'Surgical Generative Fill. Paint over any area to change clothes, add objects, or fix details with FLUX precision.'
+              },
+              {
+                t: 'Cinematic Light',
+                i: '💡',
+                d: 'Transform the mood. Change lighting from flat office bulbs to golden hour glow while preserving subject identity.'
+              },
+              {
                 t: 'Image Expansion',
                 i: '🖼️',
-                d: 'Professional AI Outpainting. Effortlessly expand tight crops into sprawling cinematic scenes while preserving your subject.'
+                d: 'Professional AI Outpainting. Effortlessly expand tight crops into sprawling cinematic scenes.'
               },
               {
                 t: 'Studio Backdrop',
@@ -268,7 +278,7 @@ export default function Home() {
               {
                 t: 'Old Photo Fix',
                 i: '⏳',
-                d: 'Complete restoration and colorization suite. Revive historical portraits or low-res phone photos with AI repair.'
+                d: 'Complete restoration and colorization suite. Revive historical portraits or low-res photos with AI repair.'
               }
             ].map((f, i) => (
               <div className="feature-card" key={i}>
