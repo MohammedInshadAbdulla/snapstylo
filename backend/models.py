@@ -7,7 +7,8 @@ class User(SQLModel, table=True):
     email: str = Field(unique=True, index=True)
     hashed_password: str
     credit_balance: int = Field(default=0)
-    is_premium: bool = Field(default=False)
+    is_verified: bool = Field(default=False)
+    verification_code: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class JobStatus(str):

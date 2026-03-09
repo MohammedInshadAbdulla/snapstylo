@@ -35,6 +35,10 @@ class Settings(BaseSettings):
     AWS_REGION: str = "us-east-1"
 
     ENV: str = "dev"
+
+    # Email (Resend)
+    RESEND_API_KEY: Optional[str] = None
+    SMTP_FROM: str = "SnapStylo <onboarding@resend.dev>"
     
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(__file__), ".env"),
