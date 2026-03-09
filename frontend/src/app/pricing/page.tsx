@@ -46,7 +46,7 @@ export default function Pricing() {
     return (
         <main>
             <Nav />
-            <div className="page" style={{ padding: '80px 20px' }}>
+            <div className="page" style={{ paddingTop: 'calc(var(--nav-h) + 40px)', paddingBottom: '80px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '60px' }}>
                     <div className="section-label">THE STUDIO STORE</div>
                     <h2 className="section-title">FUEL YOUR<br /><span>CREATIVITY</span></h2>

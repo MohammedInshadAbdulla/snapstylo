@@ -43,7 +43,7 @@ function ResultsContent() {
     return (
         <main>
             <Nav />
-            <div className="page" style={{ padding: '60px 20px' }}>
+            <div className="page" style={{ paddingTop: 'calc(var(--nav-h) + 40px)', paddingBottom: '60px' }}>
                 <div style={{ maxWidth: '600px', margin: '0 auto' }}>
                     <div className="section-label">GENERATION COMPLETE</div>
                     <h2 className="section-title">YOUR<br /><span>MASTERPIECE</span></h2>

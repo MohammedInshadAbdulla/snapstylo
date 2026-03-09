@@ -32,9 +32,9 @@ export default function Gallery() {
     return (
         <main>
             <Nav />
-            <div className="page" style={{ padding: '60px 20px' }}>
+            <div className="page" style={{ paddingTop: 'calc(var(--nav-h) + 40px)', paddingBottom: '60px' }}>
                 <div className="section-label">YOUR COLLECTION</div>
-                <h2 className="section-title">THE STYLR<br /><span>GALLERY</span></h2>
+                <h2 className="section-title">THE SNAPSTYLO<br /><span>GALLERY</span></h2>
 
                 {isLoading ? (
                     <div style={{ textAlign: 'center', marginTop: '40px' }}>Loading your masterpieces...</div>
