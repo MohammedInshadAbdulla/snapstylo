@@ -62,19 +62,33 @@ export default function Dashboard() {
         setIsAuthenticated(true);
     }, [router]);
 
-    // Canvas Logic for Magic Brush
+    // Canvas Logic for Magic Brush (High-Res)
+    const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
+
     useEffect(() => {
-        if (activeTool === 'inpaint' && file && canvasRef.current && containerRef.current) {
+        if (activeTool === 'inpaint' && file && canvasRef.current && hiddenCanvasRef.current && containerRef.current) {
             const canvas = canvasRef.current;
+            const hCanvas = hiddenCanvasRef.current;
             const ctx = canvas.getContext('2d');
+            const hCtx = hCanvas.getContext('2d');
+
             const img = new Image();
             img.src = URL.createObjectURL(file);
             img.onload = () => {
                 const containerWidth = containerRef.current!.offsetWidth;
                 const scale = containerWidth / img.width;
+
+                // Display Canvas (Responsive)
                 canvas.width = containerWidth;
                 canvas.height = img.height * scale;
                 ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                // Hidden Canvas (Original Res - for Mask)
+                hCanvas.width = img.width;
+                hCanvas.height = img.height;
+                hCtx!.fillStyle = 'black';
+                hCtx!.fillRect(0, 0, hCanvas.width, hCanvas.height);
+
                 setImageLoaded(true);
             };
         }
@@ -87,32 +101,61 @@ export default function Dashboard() {
 
     const stopDrawing = () => {
         setIsDrawing(false);
-        const canvas = canvasRef.current;
-        if (canvas) {
-            const ctx = canvas.getContext('2d');
-            ctx?.beginPath();
-        }
     };
 
     const draw = (e: React.MouseEvent | React.TouchEvent) => {
-        if (!isDrawing || !canvasRef.current) return;
+        if (!isDrawing || !canvasRef.current || !hiddenCanvasRef.current) return;
         const canvas = canvasRef.current;
+        const hCanvas = hiddenCanvasRef.current;
         const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+        const hCtx = hCanvas.getContext('2d');
+        if (!ctx || !hCtx) return;
 
         const rect = canvas.getBoundingClientRect();
         const x = ('touches' in e) ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
         const y = ('touches' in e) ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
 
+        // Scale coordinates for high-res canvas
+        const scaleX = hCanvas.width / canvas.width;
+        const scaleY = hCanvas.height / canvas.height;
+        const hX = x * scaleX;
+        const hY = y * scaleY;
+
+        // Draw on Display Canvas (Visible feedback)
         ctx.lineWidth = 30;
         ctx.lineCap = 'round';
         ctx.strokeStyle = 'rgba(201, 168, 76, 0.5)';
         ctx.globalCompositeOperation = 'source-over';
-
         ctx.lineTo(x, y);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(x, y);
+
+        // Draw on Hidden Canvas (The actual mask for AI)
+        hCtx.lineWidth = 30 * scaleX;
+        hCtx.lineCap = 'round';
+        hCtx.strokeStyle = 'white';
+        hCtx.lineTo(hX, hY);
+        hCtx.stroke();
+        hCtx.beginPath();
+        hCtx.moveTo(hX, hY);
+    };
+
+    const clearCanvas = () => {
+        if (!canvasRef.current || !hiddenCanvasRef.current || !file) return;
+        const canvas = canvasRef.current;
+        const hCanvas = hiddenCanvasRef.current;
+        const ctx = canvas.getContext('2d');
+        const hCtx = hCanvas.getContext('2d');
+
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        hCtx?.fillStyle === 'black'; // Reset mask
+        hCtx?.fillRect(0, 0, hCanvas.width, hCanvas.height);
+
+        // Redraw base image on visible canvas
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+        img.onload = () => ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,20 +189,9 @@ export default function Dashboard() {
 
             // 2. Handle Inpaint Mask if needed
             let maskKey = null;
-            if (activeTool === 'inpaint' && canvasRef.current) {
+            if (activeTool === 'inpaint' && hiddenCanvasRef.current) {
                 setStatus('Generating Magic Mask...');
-                const maskCanvas = document.createElement('canvas');
-                maskCanvas.width = canvasRef.current.width;
-                maskCanvas.height = canvasRef.current.height;
-                const mCtx = maskCanvas.getContext('2d');
-
-                // We need a black and white mask
-                mCtx!.fillStyle = 'black';
-                mCtx!.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
-
-                // Copy drawing from main canvas
-                mCtx!.globalCompositeOperation = 'source-over';
-                mCtx!.drawImage(canvasRef.current, 0, 0);
+                const maskCanvas = hiddenCanvasRef.current;
 
                 const maskBlob = await new Promise<Blob>((resolve) => maskCanvas.toBlob(b => resolve(b!), 'image/png'));
                 const { upload_url: m_url, key: m_key } = await getUploadUrl(token);
@@ -243,12 +275,25 @@ export default function Dashboard() {
                                                 onTouchMove={draw}
                                                 style={{ width: '100%', display: 'block' }}
                                             />
-                                            <div style={{
-                                                position: 'absolute', top: '10px', left: '10px',
-                                                background: 'rgba(0,0,0,0.6)', padding: '6px 12px',
-                                                borderRadius: '100px', fontSize: '11px', color: 'white'
-                                            }}>
-                                                Paint over the area you want to change
+                                            {/* Surgical High-Res Mask Engine */}
+                                            <canvas ref={hiddenCanvasRef} style={{ display: 'none' }} />
+
+                                            <div style={{ position: 'absolute', top: '10px', left: '10px', display: 'flex', gap: '8px' }}>
+                                                <div style={{
+                                                    background: 'rgba(0,0,0,0.6)', padding: '6px 12px',
+                                                    borderRadius: '100px', fontSize: '11px', color: 'white'
+                                                }}>
+                                                    Paint over area to change
+                                                </div>
+                                                <button
+                                                    onClick={clearCanvas}
+                                                    style={{
+                                                        background: 'var(--amber)', color: 'black', padding: '6px 12px',
+                                                        borderRadius: '100px', fontSize: '11px', fontWeight: 'bold', border: 'none', cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    Clear
+                                                </button>
                                             </div>
                                         </div>
                                     ) : (
