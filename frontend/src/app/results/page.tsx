@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Nav from '@/components/Nav';
 import { getJobStatus } from '@/lib/api';
 
 function ResultsContent() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const jobId = searchParams.get('jobId');
     const [job, setJob] = useState<any>(null);
@@ -14,8 +15,13 @@ function ResultsContent() {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            router.push('/login');
+            return;
+        }
         setIsMounted(true);
-    }, []);
+    }, [router]);
 
     useEffect(() => {
         if (!jobId) return;

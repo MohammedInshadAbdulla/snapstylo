@@ -21,6 +21,16 @@ export default function Dashboard() {
     const [file, setFile] = useState<File | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [status, setStatus] = useState('');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            router.push('/login');
+            return;
+        }
+        setIsAuthenticated(true);
+    }, [router]);
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -66,6 +76,8 @@ export default function Dashboard() {
             setStatus('');
         }
     };
+
+    if (!isAuthenticated) return null;
 
     return (
         <main>
