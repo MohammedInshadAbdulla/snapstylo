@@ -19,8 +19,8 @@ const PACKAGES = [
         price: 29,
         period: 'per month · billed monthly',
         badge: 'Most Popular',
-        features: ['300 transforms / month', '4K Ultra HD output', 'All 48 style presets', 'Batch processing (10)', 'Priority render queue'],
-        disabledFeatures: ['Custom style training']
+        features: ['300 transforms / month', '4K Ultra HD output', 'All 48 style presets', 'Batch processing (10)', 'Priority render queue', 'Custom style training'],
+        disabledFeatures: []
     },
     {
         id: 'studio',

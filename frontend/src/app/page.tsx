@@ -1,82 +1,45 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [scrolled, setScrolled] = useState(false);
+  const [activeRef, setActiveRef] = useState<HTMLElement[]>([]);
   const revealRefs = useRef<HTMLElement[]>([]);
+  revealRefs.current = [];
+
+  const addRef = (el: HTMLElement | null) => {
+    if (el && !revealRefs.current.includes(el)) {
+      revealRefs.current.push(el);
+    }
+  };
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
+          entry.target.classList.add('active');
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.1 });
 
-    revealRefs.current.forEach(ref => { if (ref) observer.observe(ref); });
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      revealRefs.current.forEach(ref => { if (ref) observer.unobserve(ref); });
-    };
+    revealRefs.current.forEach(ref => observer.observe(ref));
+    return () => observer.disconnect();
   }, []);
-
-  const addRef = (el: HTMLElement | null) => {
-    if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el);
-  };
 
   return (
     <main>
-      {/* ═══════ NAV ═══════ */}
-      <header className={`site-nav ${scrolled ? 'scrolled' : ''}`}>
-        <div className="nav__inner">
-          <Link href="/" className="nav__logo">
-            <div className="nav__logo-mark">
-              <svg viewBox="0 0 36 36" fill="none">
-                <circle cx="18" cy="18" r="13" stroke="#C9A84C" strokeWidth="1.2" opacity="0.5" />
-                <circle cx="18" cy="18" r="8" stroke="#C9A84C" strokeWidth="1.5" />
-                <circle cx="18" cy="18" r="3.5" fill="#C9A84C" />
-                <line x1="18" y1="5" x2="18" y2="10" stroke="#C9A84C" strokeWidth="1.2" opacity="0.6" />
-                <line x1="18" y1="26" x2="18" y2="31" stroke="#C9A84C" strokeWidth="1.2" opacity="0.6" />
-                <line x1="5" y1="18" x2="10" y2="18" stroke="#C9A84C" strokeWidth="1.2" opacity="0.6" />
-                <line x1="26" y1="18" x2="31" y2="18" stroke="#C9A84C" strokeWidth="1.2" opacity="0.6" />
-                <line x1="28" y1="8" x2="24" y2="12" stroke="#E2C06A" strokeWidth="1" opacity="0.8" />
-                <line x1="30" y1="12" x2="26.5" y2="13.5" stroke="#E2C06A" strokeWidth="1" opacity="0.5" />
-              </svg>
-            </div>
-            <span className="nav__logo-text">Snap<span>Stylo</span></span>
-          </Link>
-          <ul className="nav__links">
-            <li><a href="#styles">Styles</a></li>
-            <li><a href="#how">How It Works</a></li>
-            <li><a href="#gallery">Gallery</a></li>
-            <li><a href="#pricing">Pricing</a></li>
-          </ul>
-          <div className="nav__actions">
-            <Link href="/login" className="btn btn-ghost">Sign In</Link>
-            <Link href="/register" className="btn btn-primary">Start Free Trial</Link>
-          </div>
-        </div>
-      </header>
-
       {/* ═══════ HERO ═══════ */}
       <section className="hero">
-        <div className="hero__grid-lines" aria-hidden="true">
-          <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
-            <line x1="0" y1="150" x2="1400" y2="150" stroke="#C9A84C" strokeWidth="0.5" />
-            <line x1="0" y1="300" x2="1400" y2="300" stroke="#C9A84C" strokeWidth="0.5" />
-            <line x1="0" y1="600" x2="1400" y2="600" stroke="#C9A84C" strokeWidth="0.5" />
-            <line x1="0" y1="750" x2="1400" y2="750" stroke="#C9A84C" strokeWidth="0.5" />
+        <div className="hero__bg-grid">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+                <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(201, 168, 76, 0.04)" strokeWidth="1" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
             <line x1="200" y1="0" x2="200" y2="900" stroke="#C9A84C" strokeWidth="0.5" />
-            <line x1="500" y1="0" x2="500" y2="900" stroke="#C9A84C" strokeWidth="0.5" />
-            <line x1="900" y1="0" x2="900" y2="900" stroke="#C9A84C" strokeWidth="0.5" />
             <line x1="1200" y1="0" x2="1200" y2="900" stroke="#C9A84C" strokeWidth="0.5" />
             <line x1="0" y1="900" x2="700" y2="0" stroke="#C9A84C" strokeWidth="0.3" />
             <line x1="700" y1="900" x2="1400" y2="0" stroke="#C9A84C" strokeWidth="0.3" />
@@ -138,19 +101,16 @@ export default function Home() {
             { name: 'Crimson\nNoir', label: 'Style 01', desc: 'High-contrast shadows with deep red undertones.' },
             { name: 'Arctic\nBlueprint', label: 'Style 02', desc: 'Cold steel tones and precise geometric framing.' },
             { name: 'Emerald\nForest', label: 'Style 03', desc: 'Rich botanical greens with organic strokes.' },
-            { name: 'Amber\nRenaissance', label: 'Style 04', desc: 'Warm golden-hour palette with chiaroscuro depth.' },
-            { name: 'Violet\nDream', label: 'Style 05', desc: 'Surreal purple haze with soft diffusion.' }
+            { name: 'Gilded\nBaroque', label: 'Style 04', desc: 'Classical lighting with ornate gold detailing.' }
           ].map((s, i) => (
             <div className="style-card" key={i}>
-              <div className="style-card__bg" />
-              <div className="style-card__overlay" />
-              <div className="style-card__corner">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
-              </div>
               <div className="style-card__body">
-                <span className="style-card__label">{s.label}</span>
-                <h3 className="style-card__name">{s.name.split('\n').map((line, j) => <span key={j}>{line}<br /></span>)}</h3>
+                <div className="style-card__label">{s.label}</div>
+                <h3 className="style-card__name">{s.name}</h3>
                 <p className="style-card__desc">{s.desc}</p>
+                <Link href="/register" className="style-card__link">
+                  Select <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+                </Link>
               </div>
             </div>
           ))}
@@ -158,15 +118,16 @@ export default function Home() {
       </section>
 
       {/* ═══════ HOW IT WORKS ═══════ */}
-      <section className="how" id="how">
+      <section className="how-it-works" id="how">
         <div className="container">
           <div className="how__header reveal" ref={addRef}>
-            <div className="tag" style={{ marginBottom: 20 }}><span className="dot" />Simple Process</div>
-            <h2 className="section-title">Three Steps to<br /><em>Brilliance</em></h2>
+            <div className="tag"><span className="dot" />Process</div>
+            <h2 className="section-title">Studio-Grade<br /><em>Workflow</em></h2>
           </div>
+
           <div className="steps reveal" ref={addRef}>
             {[
-              { n: '01', t: 'Upload Your Portrait', b: 'Drag & drop or browse for any portrait. Supports JPEG, PNG, HEIC, and RAW files up to 50MB.' },
+              { n: '01', t: 'Upload Baseline', b: 'Start with a high-resolution portrait. Our AI analyzes facial geometry and lighting for perfect restoration.' },
               { n: '02', t: 'Select Your Style', b: 'Choose from 48 curated artistic presets — from Renaissance portraiture to cyberpunk neon.' },
               { n: '03', t: 'Download & Share', b: 'Your portrait renders at full 4K in under 30 seconds via FLUX 1.1 Pro. Print-ready and social-ready.' }
             ].map(s => (
@@ -237,7 +198,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════ STUDIO POWER (Category A Features) ═══════ */}
+      {/* ═══════ STUDIO POWER (Category A+ Features) ═══════ */}
       <section className="studio-power" id="features">
         <div className="container">
           <div className="studio-power__header reveal" ref={addRef} style={{ textAlign: 'center', marginBottom: 64 }}>
@@ -330,15 +291,13 @@ export default function Home() {
               <div className="pricing-card__period">per month · billed monthly</div>
               <div className="pricing-card__divider" />
               <div className="pricing-card__features">
-                {['50 transforms / month', 'Full HD output (2K)', '20 style presets'].map((f, i) => (
-                  <div className="pricing-feature" key={i}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><polyline points="20 6 9 17 4 12" /></svg>
-                    {f}
-                  </div>
-                ))}
-                {['4K resolution', 'Batch processing', 'Priority render queue'].map((f, i) => (
-                  <div className="pricing-feature disabled" key={`d${i}`}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                {['50 transforms / month', 'Full HD output (2K)', '20 style presets', '4K resolution', 'Batch processing', 'Priority render queue'].map((f, i) => (
+                  <div className={`pricing-feature ${i > 2 ? 'disabled' : ''}`} key={i}>
+                    {i <= 2 ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><polyline points="20 6 9 17 4 12" /></svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                    )}
                     {f}
                   </div>
                 ))}
@@ -354,18 +313,14 @@ export default function Home() {
               <div className="pricing-card__period">per month · billed monthly</div>
               <div className="pricing-card__divider" />
               <div className="pricing-card__features">
-                {['300 transforms / month', '4K Ultra HD output', 'All 48 style presets', 'Batch processing (10)', 'Priority render queue'].map((f, i) => (
-                  <div className="pricing-feature" key={i}>
+                {['300 transforms / month', '4K Ultra HD output', 'All 48 style presets', 'Batch processing (10)', 'Priority render queue', 'Custom style training'].map((f, i) => (
+                  <div className={`pricing-feature ${i > 5 ? 'disabled' : ''}`} key={i}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><polyline points="20 6 9 17 4 12" /></svg>
                     {f}
                   </div>
                 ))}
-                <div className="pricing-feature disabled">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                  Custom style training
-                </div>
               </div>
-              <Link href="/register" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', borderRadius: 12, padding: 14, fontSize: 14 }}>Start Free Trial</Link>
+              <Link href="/register" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: 14 }}>Upgrade Now →</Link>
             </div>
 
             {/* Studio */}
@@ -382,26 +337,8 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <Link href="/register" className="btn btn-ghost" style={{ width: '100%', justifyContent: 'center', borderColor: 'rgba(255,255,255,0.1)', padding: 14 }}>Contact Sales</Link>
+              <Link href="/register" className="btn btn-ghost" style={{ width: '100%', justifyContent: 'center', borderColor: 'rgba(255,255,255,0.1)', padding: 14 }}>Get Started</Link>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════ CTA ═══════ */}
-      <section className="cta-banner reveal" ref={addRef}>
-        <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 2, padding: '100px var(--gutter)' }}>
-          <div className="tag" style={{ margin: '0 auto 24px' }}><span className="dot" />7-Day Free Trial</div>
-          <h2 className="section-title" style={{ fontSize: 'clamp(36px, 6vw, 72px)', marginBottom: 20 }}>Ready to Create<br /><em>Something Iconic?</em></h2>
-          <p style={{ fontSize: 15, color: 'var(--muted-lt)', lineHeight: 1.7, marginBottom: 36, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
-            Join 48,000+ photographers and artists who&apos;ve made SnapStylo their go-to portrait studio. No credit card required.
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 14, flexWrap: 'wrap' }}>
-            <Link href="/register" className="btn btn-primary btn-lg">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-              Start Free Trial
-            </Link>
-            <a href="#pricing" className="btn btn-ghost btn-lg">View Pricing</a>
           </div>
         </div>
       </section>
@@ -411,22 +348,34 @@ export default function Home() {
         <div className="container">
           <div className="footer__top">
             <div className="footer__brand">
-              <Link href="/" className="nav__logo" style={{ marginBottom: 12 }}>
-                <span className="nav__logo-text">Snap<span>Stylo</span></span>
-              </Link>
-              <p>The elite AI photo studio. Powered by FLUX 1.1 Pro.</p>
+              <div className="footer__logo">SNAPSTYLO</div>
+              <p className="footer__tagline">The elite AI photo studio for creators and models.</p>
             </div>
-            <div>
-              <div className="footer__col-title">Product</div>
-              <div className="footer__links">
-                <Link href="/login">Studio</Link>
-                <a href="#pricing">Pricing</a>
-                <Link href="/login">Gallery</Link>
+            <div className="footer__grid">
+              <div className="footer__col">
+                <div className="footer__col-title">Studio</div>
+                <ul className="footer__links">
+                  <li><a href="#styles">Artistic Styles</a></li>
+                  <li><a href="#gallery">Gallery</a></li>
+                  <li><a href="#how">Process</a></li>
+                </ul>
+              </div>
+              <div className="footer__col">
+                <div className="footer__col-title">Account</div>
+                <ul className="footer__links">
+                  <li><Link href="/login">Sign In</Link></li>
+                  <li><Link href="/register">Create Studio</Link></li>
+                  <li><Link href="/pricing">Pricing</Link></li>
+                </ul>
               </div>
             </div>
           </div>
           <div className="footer__bottom">
-            <span className="footer__copy">&copy; 2026 SnapStylo · All rights reserved</span>
+            <div className="footer__copy">© 2026 SNAPSTYLO ATELIER. ALL RIGHTS RESERVED.</div>
+            <div className="footer__links" style={{ flexDirection: 'row', gap: 20 }}>
+              <a href="#">Privacy</a>
+              <a href="#">Terms</a>
+            </div>
           </div>
         </div>
       </footer>
