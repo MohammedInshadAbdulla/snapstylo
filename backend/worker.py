@@ -49,11 +49,25 @@ async def process_generation(ctx, job_id: str):
                 "seed": job.seed
             }
 
-            # 5. Model Inference (Forwarding all studio params)
-            image_url = await ai_service.generate_image(final_prompt, input_url, **ai_params)
+            # 5. Model Inference (Dynamic Task Routing)
+            if job.task_type == "upscale":
+                image_url = await ai_service.upscale(input_url)
+            elif job.task_type == "outpaint":
+                image_url = await ai_service.outpaint(input_url, final_prompt)
+            elif job.task_type == "background":
+                image_url = await ai_service.generate_background(input_url, final_prompt)
+            elif job.task_type == "restore":
+                image_url = await ai_service.restore_old_photo(input_url)
+            else:
+                # Standard Generation (FLUX Dev)
+                image_url = await ai_service.generate_image(final_prompt, input_url, **ai_params)
             
-            # 6. Face Restoration
-            restored_url = await ai_service.restore_face(image_url)
+            # 6. Face Restoration (Optional for non-portrait tasks in future, but keeping for now)
+            # Skip restoration for outpaint/background to preserve scene integrity if needed
+            if job.task_type in ["generate", "upscale"]:
+                restored_url = await ai_service.restore_face(image_url)
+            else:
+                restored_url = image_url
             
             # 7. Download result and save to R2
             MAX_RETRIES = 3

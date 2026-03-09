@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from auth import get_current_user
 from models import User, Job, JobStatus
@@ -19,6 +20,7 @@ class SubmitJobRequest(BaseModel):
     style_id: str
     input_r2_key: str
     idempotency_key: str
+    task_type: str = "generate"
     prompt: Optional[str] = None
     aspect_ratio: str = "portrait_4_5"
     guidance_scale: float = 3.5
@@ -56,6 +58,7 @@ async def submit_job(
         id=job_id,
         user_id=current_user.id,
         status=JobStatus.PENDING,
+        task_type=request.task_type,
         style_id=request.style_id,
         prompt=request.prompt,
         aspect_ratio=request.aspect_ratio,

@@ -21,6 +21,7 @@ class Job(SQLModel, table=True):
     id: Optional[str] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
     status: str = Field(default=JobStatus.PENDING)
+    task_type: str = Field(default="generate") # generate, outpaint, upscale, background, restore
     style_id: str
     prompt: Optional[str] = None
     aspect_ratio: str = Field(default="portrait_4_5")

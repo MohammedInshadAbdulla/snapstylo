@@ -19,11 +19,9 @@ class AIService:
     async def generate_image(self, prompt: str, input_image_url: str = None, **kwargs):
         """
         Professional FLUX Dev generation with granular control.
-        Supports advanced parameters for studio-grade artistic output.
         """
         configure_fal()
         
-        # Default parameters aligned with FLUX Dev best practices
         arguments = {
             "prompt": prompt,
             "num_inference_steps": kwargs.get("num_inference_steps", 28),
@@ -38,17 +36,67 @@ class AIService:
         if input_image_url:
             arguments["image_url"] = input_image_url
             arguments["strength"] = kwargs.get("prompt_strength", 0.5)
-            # Image-to-image specialized endpoint
             endpoint = "fal-ai/flux/dev/image-to-image"
         else:
             endpoint = "fal-ai/flux/dev"
 
-        result = await fal_client.subscribe_async(
-            endpoint,
-            arguments=arguments
-        )
-        
+        result = await fal_client.subscribe_async(endpoint, arguments=arguments)
         return result["images"][0]["url"]
+
+    async def outpaint(self, image_url: str, prompt: str, directions: list = ["down", "left", "right", "up"]):
+        """
+        Image Expansion (Outpainting)
+        """
+        configure_fal()
+        result = await fal_client.subscribe_async(
+            "fal-ai/flux-dev/outpainting",
+            arguments={
+                "image_url": image_url,
+                "prompt": prompt,
+                "directions": directions,
+                "num_inference_steps": 30
+            }
+        )
+        return result["images"][0]["url"]
+
+    async def upscale(self, image_url: str):
+        """
+        Resolution Booster (Aura-SR)
+        """
+        configure_fal()
+        result = await fal_client.subscribe_async(
+            "fal-ai/aura-sr",
+            arguments={"image_url": image_url}
+        )
+        return result["image"]["url"]
+
+    async def generate_background(self, image_url: str, prompt: str):
+        """
+        Background Replacement with Context
+        """
+        configure_fal()
+        result = await fal_client.subscribe_async(
+            "fal-ai/background-generator",
+            arguments={
+                "image_url": image_url,
+                "prompt": prompt
+            }
+        )
+        return result["image"]["url"]
+
+    async def restore_old_photo(self, image_url: str):
+        """
+        Aging/Restoration & Colorization
+        """
+        configure_fal()
+        result = await fal_client.subscribe_async(
+            "fal-ai/face-restorer", # Using face-restorer for generic restoration as fallback if no specific model
+            arguments={
+                "image_url": image_url,
+                "fidelity": 0.5
+            }
+        )
+        return result["image"]["url"]
 
     async def restore_face(self, image_url: str):
         """
