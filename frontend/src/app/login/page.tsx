@@ -16,7 +16,6 @@ export default function Login() {
         e.preventDefault();
         setIsLoading(true);
         setError('');
-
         try {
             const formData = new FormData();
             formData.append('username', email);
@@ -29,7 +28,13 @@ export default function Login() {
 
             const data = await res.json();
 
-            if (!res.ok) throw data;
+            if (!res.ok) {
+                if (res.status === 403) {
+                    setError("Account not verified. Please register again to receive a new code.");
+                    return;
+                }
+                throw data;
+            }
 
             localStorage.setItem('token', data.access_token);
             router.push('/dashboard');
