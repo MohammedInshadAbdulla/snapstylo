@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Nav from '@/components/Nav';
 
 export default function Home() {
   const revealRefs = useRef<HTMLElement[]>([]);
@@ -17,11 +18,11 @@ export default function Home() {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('active');
+          observer.unobserve(entry.target);
         }
       });
     }, {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px' // Trigger slightly before it enters fully
+      threshold: 0.1
     });
 
     revealRefs.current.forEach(ref => {
@@ -33,6 +34,7 @@ export default function Home() {
 
   return (
     <main>
+      <Nav />
       {/* ═══════ HERO ═══════ */}
       <section className="hero">
         <div className="hero__bg-grid">
@@ -105,9 +107,15 @@ export default function Home() {
             { name: 'Crimson\nNoir', label: 'Style 01', desc: 'High-contrast shadows with deep red undertones.' },
             { name: 'Arctic\nBlueprint', label: 'Style 02', desc: 'Cold steel tones and precise geometric framing.' },
             { name: 'Emerald\nForest', label: 'Style 03', desc: 'Rich botanical greens with organic strokes.' },
-            { name: 'Gilded\nBaroque', label: 'Style 04', desc: 'Classical lighting with ornate gold detailing.' }
+            { name: 'Gilded\nBaroque', label: 'Style 04', desc: 'Classical lighting with ornate gold detailing.' },
+            { name: 'Midnight\nCyber', label: 'Style 05', desc: 'Neon highlights against obsidian deep space.' }
           ].map((s, i) => (
             <div className="style-card" key={i}>
+              <div className="style-card__bg" />
+              <div className="style-card__overlay" />
+              <div className="style-card__corner">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+              </div>
               <div className="style-card__body">
                 <div className="style-card__label">{s.label}</div>
                 <h3 className="style-card__name">{s.name}</h3>
@@ -122,7 +130,7 @@ export default function Home() {
       </section>
 
       {/* ═══════ HOW IT WORKS ═══════ */}
-      <section className="how-it-works" id="how">
+      <section className="how" id="how">
         <div className="container">
           <div className="how__header reveal" ref={addRef}>
             <div className="tag"><span className="dot" />Process</div>
@@ -145,7 +153,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════ DEMO PANEL — interactions redirect to login ═══════ */}
+      {/* ═══════ DEMO PANEL ═══════ */}
       <section className="demo">
         <div className="container">
           <div className="demo__inner">
@@ -202,7 +210,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════ STUDIO POWER (Category A+ Features) ═══════ */}
+      {/* ═══════ STUDIO POWER ═══════ */}
       <section className="studio-power" id="features">
         <div className="container">
           <div className="studio-power__header reveal" ref={addRef} style={{ textAlign: 'center', marginBottom: 64 }}>
@@ -215,36 +223,12 @@ export default function Home() {
 
           <div className="features-grid reveal" ref={addRef}>
             {[
-              {
-                t: 'Resolution Booster',
-                i: '💎',
-                d: 'Intelligent 4K upscaling using Aura-SR. Not just bigger—smarter detail generation for professional printing.'
-              },
-              {
-                t: 'Magic Brush',
-                i: '🖌️',
-                d: 'Surgical Generative Fill. Paint over any area to change clothes, add objects, or fix details with FLUX precision.'
-              },
-              {
-                t: 'Cinematic Light',
-                i: '💡',
-                d: 'Transform the mood. Change lighting from flat office bulbs to golden hour glow while preserving subject identity.'
-              },
-              {
-                t: 'Image Expansion',
-                i: '🖼️',
-                d: 'Professional AI Outpainting. Effortlessly expand tight crops into sprawling cinematic scenes.'
-              },
-              {
-                t: 'Studio Backdrop',
-                i: '📸',
-                d: 'Instant background replacement with lighting consistency. Create e-commerce ready lifestyle shots in seconds.'
-              },
-              {
-                t: 'Old Photo Fix',
-                i: '⏳',
-                d: 'Complete restoration and colorization suite. Revive historical portraits or low-res photos with AI repair.'
-              }
+              { t: 'Resolution Booster', i: '💎', d: 'Intelligent 4K upscaling using Aura-SR. Not just bigger—smarter detail generation for professional printing.' },
+              { t: 'Magic Brush', i: '🖌️', d: 'Surgical Generative Fill. Paint over any area to change clothes, add objects, or fix details with FLUX precision.' },
+              { t: 'Cinematic Light', i: '💡', d: 'Transform the mood. Change lighting from flat office bulbs to golden hour glow while preserving subject identity.' },
+              { t: 'Image Expansion', i: '🖼️', d: 'Professional AI Outpainting. Effortlessly expand tight crops into sprawling cinematic scenes.' },
+              { t: 'Studio Backdrop', i: '📸', d: 'Instant background replacement with lighting consistency. Create e-commerce ready lifestyle shots in seconds.' },
+              { t: 'Old Photo Fix', i: '⏳', d: 'Complete restoration and colorization suite. Revive historical portraits or low-res photos with AI repair.' }
             ].map((f, i) => (
               <div className="feature-card" key={i}>
                 <div className="feature-card__icon">{f.i}</div>
@@ -257,7 +241,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════ GALLERY PREVIEW ═══════ */}
+      {/* ═══════ GALLERY ═══════ */}
       <section className="gallery" id="gallery">
         <div className="gallery__header reveal" ref={addRef}>
           <div className="tag" style={{ marginBottom: 20 }}><span className="dot" />Community Gallery</div>
@@ -288,7 +272,6 @@ export default function Home() {
           </div>
 
           <div className="pricing-grid reveal" ref={addRef}>
-            {/* Starter */}
             <div className="pricing-card">
               <div className="pricing-card__tier">Starter</div>
               <div className="pricing-card__price"><sup>$</sup>9</div>
@@ -309,7 +292,6 @@ export default function Home() {
               <Link href="/register" className="btn btn-ghost" style={{ width: '100%', justifyContent: 'center', borderColor: 'rgba(255,255,255,0.1)', padding: 14 }}>Get Started</Link>
             </div>
 
-            {/* Pro */}
             <div className="pricing-card featured">
               <div className="pricing-card__badge">Most Popular</div>
               <div className="pricing-card__tier">Pro</div>
@@ -318,7 +300,7 @@ export default function Home() {
               <div className="pricing-card__divider" />
               <div className="pricing-card__features">
                 {['300 transforms / month', '4K Ultra HD output', 'All 48 style presets', 'Batch processing (10)', 'Priority render queue', 'Custom style training'].map((f, i) => (
-                  <div className={`pricing-feature ${i > 5 ? 'disabled' : ''}`} key={i}>
+                  <div className="pricing-feature" key={i}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14"><polyline points="20 6 9 17 4 12" /></svg>
                     {f}
                   </div>
@@ -327,7 +309,6 @@ export default function Home() {
               <Link href="/register" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: 14 }}>Upgrade Now →</Link>
             </div>
 
-            {/* Studio */}
             <div className="pricing-card">
               <div className="pricing-card__tier">Studio</div>
               <div className="pricing-card__price"><sup>$</sup>79</div>
