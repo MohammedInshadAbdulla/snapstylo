@@ -8,9 +8,16 @@ export default function Nav() {
     const pathname = usePathname();
     const [credits, setCredits] = useState<number | null>(null);
     const [scrolled, setScrolled] = useState(false);
+    const [scrollProgress, setScrollProgress] = useState(0);
 
     useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 20);
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+
+            const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (window.scrollY / totalHeight) * 100;
+            setScrollProgress(progress);
+        };
         window.addEventListener('scroll', handleScroll, { passive: true });
 
         const fetchUser = async () => {
@@ -31,6 +38,7 @@ export default function Nav() {
 
     return (
         <header className={`site-nav ${scrolled ? 'scrolled' : ''}`}>
+            <div className="nav-progress" style={{ width: `${scrollProgress}%` }} />
             <div className="nav__inner">
                 <Link href="/" className="nav__logo">
                     <div className="nav__logo-mark">

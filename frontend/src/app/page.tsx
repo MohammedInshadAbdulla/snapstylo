@@ -7,20 +7,7 @@ import Nav from '@/components/Nav';
 
 export default function Home() {
   const revealRefs = useRef<HTMLElement[]>([]);
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "SnapStylo",
-    "operatingSystem": "Web",
-    "applicationCategory": "MultimediaApplication",
-    "offers": {
-      "@type": "Offer",
-      "price": "9.00",
-      "priceCurrency": "USD"
-    },
-    "description": "The elite AI photo studio — where every portrait becomes a cinematic statement. Professional-grade transformations in seconds via FLUX 1.1 Pro."
-  };
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const addRef = (el: HTMLElement | null) => {
     if (el && !revealRefs.current.includes(el)) {
@@ -29,6 +16,11 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -44,8 +36,25 @@ export default function Home() {
       if (ref) observer.observe(ref);
     });
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SnapStylo",
+    "operatingSystem": "Web",
+    "applicationCategory": "MultimediaApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "9.00",
+      "priceCurrency": "USD"
+    },
+    "description": "The elite AI photo studio — where every portrait becomes a cinematic statement. Professional-grade transformations in seconds via FLUX 1.1 Pro."
+  };
 
   return (
     <main style={{ position: 'relative', overflow: 'hidden' }}>
@@ -54,6 +63,29 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
+      {/* ═══════ INTERACTIVE OVERLAYS ═══════ */}
+      <div
+        className="cursor-glow"
+        style={{
+          left: mousePos.x,
+          top: mousePos.y,
+          transform: 'translate(-50%, -50%)'
+        }}
+      />
+
+      {[...Array(20)].map((_, i) => (
+        <div
+          key={i}
+          className="particle"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 5}s`,
+            animationDuration: `${5 + Math.random() * 10}s`
+          }}
+        />
+      ))}
 
       {/* ═══════ AMBIENT GLOWS ═══════ */}
       <div className="bg-glow glow-amber" style={{ top: '5%', left: '-10%', opacity: 0.15 }}></div>

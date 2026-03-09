@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { parseError } from '@/lib/error-utils';
 
 export default function Register() {
     const [email, setEmail] = useState('');
@@ -27,12 +28,12 @@ export default function Register() {
 
             const data = await res.json();
 
-            if (!res.ok) throw new Error(data.detail || 'Registration failed');
+            if (!res.ok) throw data;
 
             localStorage.setItem('token', data.access_token);
             router.push('/dashboard');
         } catch (err: any) {
-            setError(err.message);
+            setError(parseError(err));
         } finally {
             setIsLoading(false);
         }
