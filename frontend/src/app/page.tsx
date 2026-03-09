@@ -48,12 +48,19 @@ export default function Home() {
   }, []);
 
   return (
-    <main>
+    <main style={{ position: 'relative', overflow: 'hidden' }}>
       <Script
         id="structured-data"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
+      {/* ═══════ AMBIENT GLOWS ═══════ */}
+      <div className="bg-glow glow-amber" style={{ top: '5%', left: '-10%', opacity: 0.15 }}></div>
+      <div className="bg-glow glow-violet" style={{ top: '30%', right: '-10%', opacity: 0.1, width: '800px', height: '800px' }}></div>
+      <div className="bg-glow glow-cyan" style={{ top: '60%', left: '-5%', opacity: 0.08 }}></div>
+      <div className="bg-glow glow-amber" style={{ bottom: '10%', right: '0%', opacity: 0.12 }}></div>
+
       <Nav />
       {/* ═══════ HERO ═══════ */}
       <section className="hero">
@@ -67,10 +74,12 @@ export default function Home() {
             <rect width="100%" height="100%" fill="url(#grid)" />
             <line x1="200" y1="0" x2="200" y2="900" stroke="#C9A84C" strokeWidth="0.5" />
             <line x1="1200" y1="0" x2="1200" y2="900" stroke="#C9A84C" strokeWidth="0.5" />
-            <line x1="0" y1="900" x2="700" y2="0" stroke="#C9A84C" strokeWidth="0.3" />
-            <line x1="700" y1="900" x2="1400" y2="0" stroke="#C9A84C" strokeWidth="0.3" />
           </svg>
         </div>
+
+        {/* Floating Accent Orb */}
+        <div className="bg-glow glow-amber" style={{ top: '20%', left: '50%', transform: 'translateX(-50%)', width: '400px', height: '400px', opacity: 0.2 }}></div>
+
         <div className="hero__content">
           <div className="tag hero__eyebrow">
             <span className="dot"></span>
@@ -115,7 +124,7 @@ export default function Home() {
 
       {/* ═══════ STYLES ═══════ */}
       <section className="styles-strip" id="styles">
-        <div className="container">
+        <div className="container" style={{ position: 'relative' }}>
           <div className="styles-strip__header reveal" ref={addRef}>
             <div>
               <div className="tag" style={{ marginBottom: 16 }}><span className="dot" /> 48 Unique Styles</div>
@@ -153,7 +162,8 @@ export default function Home() {
 
       {/* ═══════ HOW IT WORKS ═══════ */}
       <section className="how" id="how">
-        <div className="container">
+        <div className="container" style={{ position: 'relative' }}>
+          <div className="bg-glow glow-violet" style={{ top: '0', right: '-20%', width: '600px', height: '600px', opacity: 0.1 }}></div>
           <div className="how__header reveal" ref={addRef}>
             <div className="tag"><span className="dot" />Process</div>
             <h2 className="section-title">Studio-Grade<br /><em>Workflow</em></h2>

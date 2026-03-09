@@ -37,6 +37,14 @@
 
   --nav-h: 64px;
   --gutter: clamp(20px, 5vw, 80px);
+
+  /* Vibrant Tokens */
+  --vibrant-1: #FF3D00;
+  --vibrant-2: #FFD600;
+  --vibrant-3: #8C1EFF;
+  --vibrant-4: #00E5FF;
+  --glow-1: rgba(255, 61, 0, 0.15);
+  --glow-2: rgba(140, 30, 255, 0.15);
 }
 
 /* ============================================================
@@ -178,6 +186,50 @@ body::before {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
+}
+
+/* ============================================================
+   AMBIENT VIBRANCY & GLOWS
+============================================================ */
+.bg-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(140px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.25;
+  animation: floatOrb 20s infinite alternate ease-in-out;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(-10%, -10%) scale(1);
+  }
+
+  100% {
+    transform: translate(10%, 10%) scale(1.1);
+  }
+}
+
+.glow-amber {
+  background: var(--amber);
+}
+
+.glow-violet {
+  background: var(--vibrant-3);
+}
+
+.glow-cyan {
+  background: var(--vibrant-4);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
 }
 
 /* ============================================================
